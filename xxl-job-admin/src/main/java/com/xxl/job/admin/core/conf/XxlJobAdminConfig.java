@@ -2,10 +2,15 @@ package com.xxl.job.admin.core.conf;
 
 import com.xxl.job.admin.core.alarm.JobAlarmer;
 import com.xxl.job.admin.core.scheduler.XxlJobScheduler;
-import com.xxl.job.admin.dao.*;
+import com.xxl.job.admin.dao.XxlJobGroupDao;
+import com.xxl.job.admin.dao.XxlJobInfoDao;
+import com.xxl.job.admin.dao.XxlJobLogDao;
+import com.xxl.job.admin.dao.XxlJobLogReportDao;
+import com.xxl.job.admin.dao.XxlJobRegistryDao;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +28,7 @@ import java.util.Arrays;
 public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
 
     private static XxlJobAdminConfig adminConfig = null;
+
     public static XxlJobAdminConfig getAdminConfig() {
         return adminConfig;
     }
@@ -70,21 +76,23 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     // dao, service
 
     @Resource
-    private XxlJobLogDao xxlJobLogDao;
+    private XxlJobLogDao                 xxlJobLogDao;
     @Resource
-    private XxlJobInfoDao xxlJobInfoDao;
+    private XxlJobInfoDao                xxlJobInfoDao;
     @Resource
-    private XxlJobRegistryDao xxlJobRegistryDao;
+    private XxlJobRegistryDao            xxlJobRegistryDao;
     @Resource
-    private XxlJobGroupDao xxlJobGroupDao;
+    private XxlJobGroupDao               xxlJobGroupDao;
     @Resource
-    private XxlJobLogReportDao xxlJobLogReportDao;
+    private XxlJobLogReportDao           xxlJobLogReportDao;
     @Resource
-    private JavaMailSender mailSender;
+    private JavaMailSender               mailSender;
     @Resource
-    private DataSource dataSource;
+    private DataSource                   dataSource;
     @Resource
-    private JobAlarmer jobAlarmer;
+    private JobAlarmer                   jobAlarmer;
+    @Resource
+    private DataSourceTransactionManager transactionManager;
 
 
     public String getI18n() {
@@ -155,4 +163,7 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
         return jobAlarmer;
     }
 
+    public DataSourceTransactionManager getTransactionManager() {
+        return transactionManager;
+    }
 }
