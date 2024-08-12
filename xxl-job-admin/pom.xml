@@ -134,16 +134,67 @@
             </plugin>
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>tanukisoft</groupId>
+                                    <artifactId>wrapper-delta-pack</artifactId>
+                                    <version>3.5.50</version>
+                                    <type>tar.gz</type>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.7</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <target>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/bin/wrapper-macosx-arm-64"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/bin/wrapper-macosx-arm-64"/>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/lib/libwrapper-macosx-arm-64.dylib"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/lib/libwrapper-macosx-arm-64.dylib"/>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/bin/wrapper-linux-arm-64"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/bin/wrapper-linux-arm-64"/>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/bin/wrapper-linux-arm-64"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/bin/wrapper-linux-aarch64-64"/>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/lib/libwrapper-linux-arm-64.so"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/lib/libwrapper-linux-arm-64.so"/>
+                                <copy file="${project.build.directory}/dependency/wrapper-delta-pack-3.5.50/lib/libwrapper-linux-arm-64.so"
+                                      tofile="${project.build.directory}/generated-resources/appassembler/jsw/${project.name}/lib/libwrapper-linux-aarch64-64.so"/>
+                            </target>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>appassembler-maven-plugin</artifactId>
-                <version>1.10</version>
+                <version>2.1.0</version>
                 <configuration>
-                    <configurationSourceDirectory>${project.build.outputDirectory}/config
-                    </configurationSourceDirectory>
+                    <configurationSourceDirectory>${project.build.outputDirectory}/config</configurationSourceDirectory>
                     <copyConfigurationDirectory>true</copyConfigurationDirectory>
+                    <externalDeltaPackDirectory>${project.build.directory}/dependency/wrapper-delta-pack-3.5.50
+                    </externalDeltaPackDirectory>
                     <includeConfigurationDirectoryInClasspath>true
-                    </includeConfigurationDirectoryInClasspath>
-                    <!-- 配置文件的目标目录 -->
+                    </includeConfigurationDirectoryInClasspath>                    <!-- 配置文件的目标目录 -->
                     <repositoryLayout>flat</repositoryLayout>
                     <repositoryName>lib</repositoryName>
                     <logsDirectory>logs</logsDirectory>
@@ -160,8 +211,8 @@
                                     <includes>
                                         <include>linux-x86-32</include>
                                         <include>linux-x86-64</include>
+                                        <include>linux-arm-64</include>
                                         <include>windows-x86-32</include>
-                                        <include>windows-x86-64</include>
                                         <include>macosx-universal-32</include>
                                         <include>macosx-universal-64</include>
                                     </includes>
@@ -178,12 +229,31 @@
                                             <name>wrapper.logfile</name>
                                             <value>logs/wrapper.log</value>
                                         </property>
+                                        <property>
+                                            <name>wrapper.logfile.maxsize</name>
+                                            <value>1000m</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.logfile.maxfiles</name>
+                                            <value>7</value>
+                                        </property>
+                                        <property>
+                                            <name>wrapper.ping.timeout</name>
+                                            <value>30</value>
+                                        </property>
+                                        <proerty>
+                                            <name>wrapper.ping.timeout.action</name>
+                                            <value>DUMP,RESTART</value>
+                                        </proerty>
                                     </configuration>
                                 </generatorConfiguration>
                             </generatorConfigurations>
                             <jvmSettings>
-                                <initialMemorySize>400m</initialMemorySize>
-                                <maxMemorySize>400m</maxMemorySize>
+                                <initialMemorySize>400</initialMemorySize>
+                                <maxMemorySize>400</maxMemorySize>
+                                <extraArguments>
+                                    <extraArgument>-Dlog4j2.formatMsgNoLookups=true</extraArgument>
+                                </extraArguments>
                             </jvmSettings>
                         </daemon>
                     </daemons>
